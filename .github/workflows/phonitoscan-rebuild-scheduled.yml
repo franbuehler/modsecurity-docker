@@ -12,14 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Pull owasp/modsecurity:$(cut -f2 -d- ${{ matrix.image }}
-        run: docker pull owasp/modsecurity:$(cut -f2 -d- ${{ matrix.image }})
+      - name: Pull owasp/modsecurity:$(./version.sh ${{ matrix.image }})
+        run: docker pull owasp/modsecurity:$(./version.sh ${{ matrix.image }})
 
       - name: Scan with Phonito Security
         id: phonito_scanner
         uses: phonito/phonito-scanner-action@master
         with:
-          image: owasp/modsecurity:$(cut -f2 -d- ${{ matrix.image }})
+          image: owasp/modsecurity:$(./version.sh ${{ matrix.image }})
           phonito-token: '${{ secrets.PHONITO_TOKEN }}'
         
       - name: Build ${{ matrix.image }}
