@@ -27,7 +27,11 @@ jobs:
 #        run: docker build . --file Dockerfile --tag myapp:${{ steps.vars.outputs.docker_tag }}
 
       - name: Scan with Phonito Security
+        id: phonito_scanner
         uses: phonito/phonito-scanner-action@master
         with:
           image: owasp/modsecurity:${{ matrix.image }}
           phonito-token: '${{ secrets.PHONITO_TOKEN }}'
+          
+      - name: Output
+        run: echo "${{ jobs.build.steps.phonito_scanner.outputs }}"
