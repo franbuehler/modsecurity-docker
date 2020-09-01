@@ -6,33 +6,40 @@ jobs:
     strategy:
       matrix:
         image:
+        - v2-apache
+        - v3-nginx
+        tag:
         - apache
         - nginx
 
     steps:
       - uses: actions/checkout@v1
 
-      - name: Pull ${{ matrix.image }}
-        run: docker pull owasp/modsecurity:${{ matrix.image }}
-#        run: docker build . -f ${{ matrix.image }}/Dockerfile
-#             --tag owasp/modsecurity:${{ matrix.image }}
-#             --tag owasp/modsecurity-crs:$(echo ${{ matrix.image }} | sed 's/.*-//')
-#
-#      - name: Set tag var
-#        id: vars
-#        run: echo ::set-output name=docker_tag::$(echo ${GITHUB_REF} | cut -d'/' -f3)-${GITHUB_SHA}
-#
-#      - name: Build the Docker image
-#        run: docker build . --file Dockerfile --tag myapp:${{ steps.vars.outputs.docker_tag }}
+      - name: Pull ${{ matrix.tag }}
+        run: docker pull owasp/modsecurity:${{ matrix.tag }}
 
       - name: Scan with Phonito Security
         id: phonito_scanner
         uses: phonito/phonito-scanner-action@master
         with:
-          image: owasp/modsecurity:${{ matrix.image }}
+          image: owasp/modsecurity:${{ matrix.tag }}
           phonito-token: '${{ secrets.PHONITO_TOKEN }}'
-          
-      - name: Build Image
-        if: failure()
-        run: echo "Image owasp/modsecurity:${{ matrix.image }} needs a rebuild"
         
+      - name: Build ${{ matrix.image }}
+        if: failure()
+        run: docker build . -f ${{ matrix.image }}/Dockerfile
+           --tag owasp/modsecurity:$(./version.sh ${{ matrix.image }} -v)
+           --tag owasp/modsecurity:$(./version.sh ${{ matrix.image }} -vv)
+           --tag owasp/modsecurity:$(./version.sh ${{ matrix.image }} -vvv)
+           --tag owasp/modsecurity:$(./version.sh ${{ matrix.image }} -vvvv)
+
+      - uses: azure/docker-login@v1
+        if: github.ref == 'refs/heads/master'
+        with:
+          username: ${{ secrets.dockerhub_user }}
+          password: ${{ secrets.dockerhub_token }}
+
+      - name: Push ${{ matrix.image }}
+        if: github.ref == 'refs/heads/master'
+        run: echo "Pushing images"
+#        run: docker push owasp/modsecurity
