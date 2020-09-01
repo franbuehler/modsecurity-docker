@@ -34,4 +34,4 @@ jobs:
           phonito-token: '${{ secrets.PHONITO_TOKEN }}'
           
       - name: Output
-        run: echo "${{ jobs.build.steps.phonito_scanner.outputs }}"
+        run: echo "${{ steps.phonito_scanner.outputs }}"
