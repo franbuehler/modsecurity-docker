@@ -1,4 +1,4 @@
-name: Build & Scan Docker Image
+name: Scheduled Scan & Rebuild Docker Image
 on: [push]
 jobs:
   build:
@@ -8,21 +8,18 @@ jobs:
         image:
         - v2-apache
         - v3-nginx
-        tag:
-        - apache
-        - nginx
 
     steps:
       - uses: actions/checkout@v1
 
-      - name: Pull ${{ matrix.tag }}
-        run: docker pull owasp/modsecurity:${{ matrix.tag }}
+      - name: Pull owasp/modsecurity:$(./version.sh ${{ matrix.image }} -vvvv)
+        run: docker pull owasp/modsecurity:$(./version.sh ${{ matrix.image }} -vvvv)
 
       - name: Scan with Phonito Security
         id: phonito_scanner
         uses: phonito/phonito-scanner-action@master
         with:
-          image: owasp/modsecurity:${{ matrix.tag }}
+          image: owasp/modsecurity:$(./version.sh ${{ matrix.image }} -vvvv)
           phonito-token: '${{ secrets.PHONITO_TOKEN }}'
         
       - name: Build ${{ matrix.image }}
@@ -34,12 +31,12 @@ jobs:
            --tag owasp/modsecurity:$(./version.sh ${{ matrix.image }} -vvvv)
 
       - uses: azure/docker-login@v1
-        if: ${{ github.ref == 'refs/heads/master' && failure() }}
+        if: ${{ github.ref == 'refs/heads/master' && success() }}
         with:
           username: ${{ secrets.dockerhub_user }}
           password: ${{ secrets.dockerhub_token }}
 
       - name: Push ${{ matrix.image }}
-        if: ${{ github.ref == 'refs/heads/master' && failure() }}
+        if: ${{ github.ref == 'refs/heads/master' && success() }}
         run: echo "Pushing images"
 #        run: docker push owasp/modsecurity
