@@ -34,5 +34,5 @@ jobs:
           
       - name: Output
         if: always()
-        run: echo "${{ steps.phonito_scanner.outputs.error }}"
+        run: echo "${{ steps.phonito_scanner.outputs.status }}"
         
