@@ -8,7 +8,7 @@ jobs:
         image:
         - apache
         - nginx
-        fail-fast: false
+       # fail-fast: false
 
     steps:
       - uses: actions/checkout@v1
