@@ -32,7 +32,7 @@ jobs:
           image: owasp/modsecurity:${{ matrix.image }}
           phonito-token: '${{ secrets.PHONITO_TOKEN }}'
           
-      - name: Output
-        if: always()
-        run: echo "${{ steps.phonito_scanner.outputs.conclusion }}"
+      - name: Build Image
+        if: failure()
+        run: echo "Image owasp/modsecurity:${{ matrix.image }} needs a rebuild"
         
