@@ -6,15 +6,17 @@ jobs:
     strategy:
       matrix:
         image:
-        - v2-apache
-        - v3-nginx
+        - apache
+        - nginx
+        fail-fast: false
 
     steps:
       - uses: actions/checkout@v1
 
-      - name: Build ${{ matrix.image }}
-        run: docker build . -f ${{ matrix.image }}/Dockerfile
-             --tag owasp/modsecurity:${{ matrix.image }}
+      - name: Pull ${{ matrix.image }}
+        run: docker pull owasp/modsecurity:${{ matrix.image }}
+#        run: docker build . -f ${{ matrix.image }}/Dockerfile
+#             --tag owasp/modsecurity:${{ matrix.image }}
 #             --tag owasp/modsecurity-crs:$(echo ${{ matrix.image }} | sed 's/.*-//')
 #
 #      - name: Set tag var
