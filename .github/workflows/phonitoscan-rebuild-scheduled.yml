@@ -34,12 +34,12 @@ jobs:
            --tag owasp/modsecurity:$(./version.sh ${{ matrix.image }} -vvvv)
 
       - uses: azure/docker-login@v1
-        if: github.ref == 'refs/heads/master' && failure()
+        if: ${{ github.ref == 'refs/heads/master' && failure() }}
         with:
           username: ${{ secrets.dockerhub_user }}
           password: ${{ secrets.dockerhub_token }}
 
       - name: Push ${{ matrix.image }}
-        if: github.ref == 'refs/heads/master' && failure()
+        if: ${{ github.ref == 'refs/heads/master' && failure() }}
         run: echo "Pushing images"
 #        run: docker push owasp/modsecurity
