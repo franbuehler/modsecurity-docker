@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Pull owasp/modsecurity:$(./version.sh ${{ matrix.image }} -vvvv)
+      - name: Pull ${{ matrix.image }}
         run: docker pull owasp/modsecurity:$(./version.sh ${{ matrix.image }} -vvvv)
 
       - name: Scan with Phonito Security
@@ -31,12 +31,12 @@ jobs:
            --tag owasp/modsecurity:$(./version.sh ${{ matrix.image }} -vvvv)
 
       - uses: azure/docker-login@v1
-        if: ${{ github.ref == 'refs/heads/master' && success() }}
+        if: failure()
         with:
           username: ${{ secrets.dockerhub_user }}
           password: ${{ secrets.dockerhub_token }}
 
       - name: Push ${{ matrix.image }}
-        if: ${{ github.ref == 'refs/heads/master' && success() }}
+        if: failure()
         run: echo "Pushing images"
 #        run: docker push owasp/modsecurity
