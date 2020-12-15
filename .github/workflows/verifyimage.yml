@@ -25,3 +25,8 @@ jobs:
     - name: Verify ${{ matrix.image }}
       run: |
         [ $(docker inspect ${{ matrix.image }} --format='{{.State.Running}}') = 'true' ]
+
+    - uses: anchore/scan-action@v2
+      name: Scan image
+      with:
+        image: ${{ matrix.image }}

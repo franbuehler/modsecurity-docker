@@ -28,6 +28,6 @@ jobs:
         username: ${{ secrets.dockerhub_user }}
         password: ${{ secrets.dockerhub_token }}
 
-    - name: Push ${{ matrix.image }}
-      if: github.ref == 'refs/heads/master'
-      run: docker push owasp/modsecurity
+#    - name: Push ${{ matrix.image }}
+#      if: github.ref == 'refs/heads/master'
+#      run: docker push owasp/modsecurity
